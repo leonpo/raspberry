@@ -52,6 +52,8 @@ def main():
         detectedMove = None         # the player's move: up, down, left, right
         DISPLAYSURF.fill(BLUE)
         drawPerson()
+        if len(pattern) > 0:
+            showMove(pattern[currentStep])
 
         scoreSurf = BASICFONT.render('Score: ' + str(score), 1, WHITE)
         scoreRect = scoreSurf.get_rect()
@@ -165,9 +167,7 @@ def showMove(move):
     if move == LEFT:
         pygame.draw.rect(DISPLAYSURF, GREEN, (230, 100, 70, 20))
     if move == RIGHT:
-        pygame.draw.rect(DISPLAYSURF, GREEN, (340, 100, 70, 20))
-    pygame.display.update()
-    pygame.time.wait(3000)    
+        pygame.draw.rect(DISPLAYSURF, GREEN, (340, 100, 70, 20))  
 
 def drawPerson():
     pygame.draw.circle(DISPLAYSURF, YELLOW, (300,60), 20)       # head
