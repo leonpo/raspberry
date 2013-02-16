@@ -1,5 +1,6 @@
 import random, sys, time, pygame
 from pygame.locals import *
+from SimpleCV import Camera, Color, Display
 
 FPS = 5
 WINDOWWIDTH = 640
@@ -21,8 +22,10 @@ RIGHT = "RIGHT"
 UP = "UP"
 DOWN = "DOWN"
 
+prevCenter = None
+
 def main():
-    global FPSCLOCK, DISPLAYSURF, BASICFONT
+    global FPSCLOCK, DISPLAYSURF, BASICFONT, cam
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
@@ -41,6 +44,11 @@ def main():
     score = 0
     # when False, the move is playing. when True, waiting for the player to do the move
     waitingForInput = False
+    
+    # init SimpleCV stuff
+    cam = Camera(prop_set={'width':320,'height':240})
+    size = (cam.getImage().size())
+    #disp = Display(size)
 
     while True: # main game loop
         detectedMove = None         # the player's move: up, down, left, right
@@ -114,12 +122,40 @@ def checkForQuit():
         pygame.event.post(event) # put the other KEYUP event objects back
         
 def checkForMovement():
-    for event in pygame.event.get(QUIT): # get all the QUIT events
-        terminate() # terminate if any QUIT events are present
-    for event in pygame.event.get(KEYUP): # get all the KEYUP events
-        if event.key == K_ESCAPE:
-            terminate() # terminate if the KEYUP event was for the Esc key
-        pygame.event.post(event) # put the other KEYUP event objects back        
+    global prevCenter
+    img = cam.getImage()
+    dist = img.colorDistance(Color.RED).invert().dilate(3).threshold(130)
+
+    blobs = dist.findBlobs(minsize=500)
+
+    if( blobs is not None ):
+        blobs.draw(color=Color.GREEN, width=3)
+        blobs.sortArea()
+        center = (int(blobs[-1].minRectX()), int(blobs[-1].minRectY()))
+
+        # check of movement direction
+        if prevCenter is not None:
+            evt = pygame.event.Event(pygame.KEYDOWN)  
+            if (prevCenter[0] - center[0]) > 20:
+                print "moved left"
+                evt.key = K_a
+                pygame.event.post(evt)
+            if (prevCenter[0] - center[0]) < -20:
+                print "moved right"
+                evt.key = K_d
+                pygame.event.post(evt)
+                
+            if (prevCenter[1] - center[1]) > 20:
+                print "moved up"
+                evt.key = K_w
+                pygame.event.post(evt)
+            if (prevCenter[1] - center[1]) <-20:
+                print "moved down"
+                evt.key = K_s
+                pygame.event.post(evt)
+
+        prevCenter = center
+    #dist.save(disp)       
 
 def showMove(move):
     if move == UP:
