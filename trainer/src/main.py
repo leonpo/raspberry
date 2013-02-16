@@ -1,10 +1,10 @@
 import random, sys, time, pygame
 from pygame.locals import *
-from SimpleCV import Camera, Display, Color
+from SimpleCV import Camera, Color
 
 FPS = 5
-WINDOWWIDTH = 1280
-WINDOWHEIGHT = 720
+WINDOWWIDTH = 1184
+WINDOWHEIGHT = 624
 TIMEOUT = 10 # seconds before game over if no right movement is performed.
 
 #                R    G    B
@@ -47,8 +47,6 @@ def main():
     
     # init SimpleCV stuff
     cam = Camera(prop_set={'width':320,'height':240})
-    size = (cam.getImage().size())
-    #disp = Display(size)
 
     while True: # main game loop
         detectedMove = None         # the player's move: up, down, left, right
@@ -134,29 +132,28 @@ def checkForMovement():
         center = (int(blobs[-1].minRectX()), int(blobs[-1].minRectY()))
 
         # check of movement direction
-        if prevCenter is not None:
-            evt = pygame.event.Event(pygame.KEYDOWN)  
+        if prevCenter is not None:  
             if (prevCenter[0] - center[0]) > 20:
                 print "moved right"
-                evt.key = K_d
+                evt = pygame.event.Event(pygame.KEYDOWN, {'key':K_d})
                 pygame.event.post(evt)
             if (prevCenter[0] - center[0]) < -20:
                 print "moved left"
-                evt.key = K_a
+                evt = pygame.event.Event(pygame.KEYDOWN, {'key':K_a})
                 pygame.event.post(evt)
                 
             if (prevCenter[1] - center[1]) > 20:
                 print "moved up"
-                evt.key = K_w
+                evt = pygame.event.Event(pygame.KEYDOWN, {'key':K_w})
                 pygame.event.post(evt)
             if (prevCenter[1] - center[1]) <-20:
                 print "moved down"
-                evt.key = K_s
+                evt = pygame.event.Event(pygame.KEYDOWN, {'key':K_s})
                 pygame.event.post(evt)
 
         prevCenter = center
     #dist.save(disp)
-    DISPLAYSURF.blit(dist.applyLayers().toPygameSurface() , (800,0))
+    DISPLAYSURF.blit(dist.applyLayers().toPygameSurface() , (600,0))
 
 def showMove(move):
     if move == UP:
