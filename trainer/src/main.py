@@ -69,8 +69,6 @@ def main():
                     
         if not waitingForInput:
             # add new move to the pattern
-            pygame.display.update()
-            pygame.time.wait(1000)
             pattern = [] # currently always only one move to remember
             pattern.append(random.choice((LEFT,RIGHT,UP,DOWN)))
             for move in pattern:
@@ -98,7 +96,6 @@ def main():
                 currentStep = 0
                 waitingForInput = False
                 score = 0
-                pygame.time.wait(1000)
                 
         pygame.display.update()
         FPSCLOCK.tick(FPS)
