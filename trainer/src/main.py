@@ -1,10 +1,10 @@
 import random, sys, time, pygame
 from pygame.locals import *
-from SimpleCV import Camera, Color, Display
+from SimpleCV import Camera, Display, Color
 
 FPS = 5
-WINDOWWIDTH = 640
-WINDOWHEIGHT = 480
+WINDOWWIDTH = 1280
+WINDOWHEIGHT = 720
 TIMEOUT = 10 # seconds before game over if no right movement is performed.
 
 #                R    G    B
@@ -52,7 +52,7 @@ def main():
 
     while True: # main game loop
         detectedMove = None         # the player's move: up, down, left, right
-        DISPLAYSURF.fill(BLACK)
+        DISPLAYSURF.fill(BLUE)
         drawPerson()
 
         scoreSurf = BASICFONT.render('Score: ' + str(score), 1, WHITE)
@@ -137,12 +137,12 @@ def checkForMovement():
         if prevCenter is not None:
             evt = pygame.event.Event(pygame.KEYDOWN)  
             if (prevCenter[0] - center[0]) > 20:
-                print "moved left"
-                evt.key = K_a
-                pygame.event.post(evt)
-            if (prevCenter[0] - center[0]) < -20:
                 print "moved right"
                 evt.key = K_d
+                pygame.event.post(evt)
+            if (prevCenter[0] - center[0]) < -20:
+                print "moved left"
+                evt.key = K_a
                 pygame.event.post(evt)
                 
             if (prevCenter[1] - center[1]) > 20:
@@ -155,7 +155,8 @@ def checkForMovement():
                 pygame.event.post(evt)
 
         prevCenter = center
-    #dist.save(disp)       
+    #dist.save(disp)
+    DISPLAYSURF.blit(dist.applyLayers().toPygameSurface() , (800,0))
 
 def showMove(move):
     if move == UP:
