@@ -33,7 +33,7 @@ def main():
     pygame.display.set_caption('Personal Trainer')
 
     BASICFONT = pygame.font.Font('freesansbold.ttf', 24)
-    infoSurf = BASICFONT.render('Please Follow the movements on the screen', 1, WHITE)
+    infoSurf = BASICFONT.render('Please follow the movements on the screen', 1, WHITE)
     infoRect = infoSurf.get_rect()
     infoRect.topleft = (10, WINDOWHEIGHT - 25)
 
@@ -122,11 +122,13 @@ def checkForQuit():
 def checkForMovement():
     global prevCenter
     img = cam.getImage()
-    dist = img.colorDistance(Color.RED).invert().dilate(3).threshold(130)
+    dist = img.colorDistance(Color.BLUE).invert().dilate(3).threshold(130)
 
-    blobs = dist.findBlobs(minsize=500)
+    blobs = dist.findBlobs(minsize=200)
 
     if( blobs is not None ):
+        
+        
         blobs.draw(color=Color.GREEN, width=3)
         blobs.sortArea()
         center = (int(blobs[-1].minRectX()), int(blobs[-1].minRectY()))
@@ -170,8 +172,8 @@ def showMove(move):
 def drawPerson():
     pygame.draw.circle(DISPLAYSURF, YELLOW, (300,60), 20)       # head
     pygame.draw.rect(DISPLAYSURF, GREEN, (270, 100, 60, 100))   # body
-    pygame.draw.rect(DISPLAYSURF, BLUE, (270, 210, 20, 60))     # left leg
-    pygame.draw.rect(DISPLAYSURF, BLUE, (310, 210, 20, 60))     # right
+    pygame.draw.rect(DISPLAYSURF, GREEN, (270, 210, 20, 60))     # left leg
+    pygame.draw.rect(DISPLAYSURF, GREEN, (310, 210, 20, 60))     # right
 
 def successAnimation():
     pygame.draw.rect(DISPLAYSURF, GREEN, (10, 10, 500,400)) # success
