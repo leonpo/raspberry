@@ -1,74 +1,51 @@
-# Simulate (a Simon clone)
-# By Al Sweigart al@inventwithpython.com
-# http://inventwithpython.com/pygame
-# Released under a "Simplified BSD" license
-
 import random, sys, time, pygame
 from pygame.locals import *
 
-FPS = 30
+FPS = 5
 WINDOWWIDTH = 640
 WINDOWHEIGHT = 480
-FLASHSPEED = 500 # in milliseconds
-FLASHDELAY = 200 # in milliseconds
-BUTTONSIZE = 200
-BUTTONGAPSIZE = 20
-TIMEOUT = 4 # seconds before game over if no button is pushed.
+TIMEOUT = 10 # seconds before game over if no right movement is performed.
 
 #                R    G    B
 WHITE        = (255, 255, 255)
 BLACK        = (  0,   0,   0)
-BRIGHTRED    = (255,   0,   0)
 RED          = (155,   0,   0)
-BRIGHTGREEN  = (  0, 255,   0)
 GREEN        = (  0, 155,   0)
-BRIGHTBLUE   = (  0,   0, 255)
 BLUE         = (  0,   0, 155)
-BRIGHTYELLOW = (255, 255,   0)
 YELLOW       = (155, 155,   0)
-DARKGRAY     = ( 40,  40,  40)
 bgColor = BLACK
 
-XMARGIN = int((WINDOWWIDTH - (2 * BUTTONSIZE) - BUTTONGAPSIZE) / 2)
-YMARGIN = int((WINDOWHEIGHT - (2 * BUTTONSIZE) - BUTTONGAPSIZE) / 2)
-
-# Rect objects for each of the four buttons
-YELLOWRECT = pygame.Rect(XMARGIN, YMARGIN, BUTTONSIZE, BUTTONSIZE)
-BLUERECT   = pygame.Rect(XMARGIN + BUTTONSIZE + BUTTONGAPSIZE, YMARGIN, BUTTONSIZE, BUTTONSIZE)
-REDRECT    = pygame.Rect(XMARGIN, YMARGIN + BUTTONSIZE + BUTTONGAPSIZE, BUTTONSIZE, BUTTONSIZE)
-GREENRECT  = pygame.Rect(XMARGIN + BUTTONSIZE + BUTTONGAPSIZE, YMARGIN + BUTTONSIZE + BUTTONGAPSIZE, BUTTONSIZE, BUTTONSIZE)
+# Available player moves
+LEFT = "LEFT"
+RIGHT = "RIGHT"
+UP = "UP"
+DOWN = "DOWN"
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, BASICFONT, BEEP1, BEEP2, BEEP3, BEEP4
+    global FPSCLOCK, DISPLAYSURF, BASICFONT
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT),pygame.FULLSCREEN)
-    pygame.display.set_caption('Simulate')
+    DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT)) #pygame.FULLSCREEN
+    pygame.display.set_caption('Personal Trainer')
 
-    BASICFONT = pygame.font.Font('freesansbold.ttf', 16)
-    infoSurf = BASICFONT.render('Match the pattern by clicking on the button or using the Q, W, A, S keys.', 1, DARKGRAY)
+    BASICFONT = pygame.font.Font('freesansbold.ttf', 24)
+    infoSurf = BASICFONT.render('Please Follow the movements on the screen', 1, WHITE)
     infoRect = infoSurf.get_rect()
     infoRect.topleft = (10, WINDOWHEIGHT - 25)
 
-    # load the sound files
-    BEEP1 = pygame.mixer.Sound('beep1.ogg')
-    BEEP2 = pygame.mixer.Sound('beep2.ogg')
-    BEEP3 = pygame.mixer.Sound('beep3.ogg')
-    BEEP4 = pygame.mixer.Sound('beep4.ogg')
-
     # Initialize some variables for a new game
-    pattern = [] # stores the pattern of colors
-    currentStep = 0 # the color the player must push next
-    lastClickTime = 0 # timestamp of the player's last button push
+    pattern = []  # stores the moves to follow
+    currentStep = 0 # the movement that player should follow
+    lastMoveTime = 0 # timestamp of the last movement
     score = 0
-    # when False, the pattern is playing. when True, waiting for the player to click a colored button:
+    # when False, the move is playing. when True, waiting for the player to do the move
     waitingForInput = False
 
     while True: # main game loop
-        clickedButton = None # button that was clicked (set to YELLOW, RED, GREEN, or BLUE)
-        DISPLAYSURF.fill(bgColor)
-        drawButtons()
+        detectedMove = None         # the player's move: up, down, left, right
+        DISPLAYSURF.fill(BLACK)
+        drawPerson()
 
         scoreSurf = BASICFONT.render('Score: ' + str(score), 1, WHITE)
         scoreRect = scoreSurf.get_rect()
@@ -78,48 +55,43 @@ def main():
         DISPLAYSURF.blit(infoSurf, infoRect)
 
         checkForQuit()
+        checkForMovement()
         for event in pygame.event.get(): # event handling loop
-            if event.type == MOUSEBUTTONUP:
-                mousex, mousey = event.pos
-                clickedButton = getButtonClicked(mousex, mousey)
-            elif event.type == KEYDOWN:
-                if event.key == K_q:
-                    clickedButton = YELLOW
+            if event.type == KEYDOWN:
+                if event.key == K_a:
+                    detectedMove = LEFT
+                elif event.key == K_d:
+                    detectedMove = RIGHT
                 elif event.key == K_w:
-                    clickedButton = BLUE
-                elif event.key == K_a:
-                    clickedButton = RED
+                    detectedMove = UP
                 elif event.key == K_s:
-                    clickedButton = GREEN
-
-
-
+                    detectedMove = DOWN     
+                    
         if not waitingForInput:
-            # play the pattern
+            # add new move to the pattern
             pygame.display.update()
             pygame.time.wait(1000)
-            pattern.append(random.choice((YELLOW, BLUE, RED, GREEN)))
-            for button in pattern:
-                flashButtonAnimation(button)
-                pygame.time.wait(FLASHDELAY)
+            pattern = [] # currently always only one move to remember
+            pattern.append(random.choice((LEFT,RIGHT,UP,DOWN)))
+            for move in pattern:
+                showMove(move)
             waitingForInput = True
         else:
-            # wait for the player to enter buttons
-            if clickedButton and clickedButton == pattern[currentStep]:
-                # pushed the correct button
-                flashButtonAnimation(clickedButton)
+            # wait for the player to do the movement
+            if detectedMove and detectedMove == pattern[currentStep]:
+                # correct movement
                 currentStep += 1
-                lastClickTime = time.time()
+                lastMoveTime = time.time()
 
                 if currentStep == len(pattern):
-                    # pushed the last button in the pattern
-                    changeBackgroundAnimation()
+                    # performed last move in the pattern
+                    successAnimation()
                     score += 1
                     waitingForInput = False
                     currentStep = 0 # reset back to first step
 
-            elif (clickedButton and clickedButton != pattern[currentStep]) or (currentStep != 0 and time.time() - TIMEOUT > lastClickTime):
-                # pushed the incorrect button, or has timed out
+            elif (detectedMove and detectedMove != pattern[currentStep]) or (currentStep != 0 and time.time() - TIMEOUT > lastMoveTime):
+                # performed wrong move, or has timed out
                 gameOverAnimation()
                 # reset the variables for a new game:
                 pattern = []
@@ -127,8 +99,7 @@ def main():
                 waitingForInput = False
                 score = 0
                 pygame.time.wait(1000)
-                changeBackgroundAnimation()
-
+                
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -137,7 +108,6 @@ def terminate():
     pygame.quit()
     sys.exit()
 
-
 def checkForQuit():
     for event in pygame.event.get(QUIT): # get all the QUIT events
         terminate() # terminate if any QUIT events are present
@@ -145,107 +115,42 @@ def checkForQuit():
         if event.key == K_ESCAPE:
             terminate() # terminate if the KEYUP event was for the Esc key
         pygame.event.post(event) # put the other KEYUP event objects back
+        
+def checkForMovement():
+    for event in pygame.event.get(QUIT): # get all the QUIT events
+        terminate() # terminate if any QUIT events are present
+    for event in pygame.event.get(KEYUP): # get all the KEYUP events
+        if event.key == K_ESCAPE:
+            terminate() # terminate if the KEYUP event was for the Esc key
+        pygame.event.post(event) # put the other KEYUP event objects back        
 
+def showMove(move):
+    if move == UP:
+        pygame.draw.rect(DISPLAYSURF, GREEN, (340, 20, 20, 70))
+    if move == DOWN:
+        pygame.draw.rect(DISPLAYSURF, GREEN, (340, 100, 20, 70))
+    if move == LEFT:
+        pygame.draw.rect(DISPLAYSURF, GREEN, (230, 100, 70, 20))
+    if move == RIGHT:
+        pygame.draw.rect(DISPLAYSURF, GREEN, (340, 100, 70, 20))
+    pygame.display.update()
+    pygame.time.wait(3000)    
 
-def flashButtonAnimation(color, animationSpeed=50):
-    if color == YELLOW:
-        sound = BEEP1
-        flashColor = BRIGHTYELLOW
-        rectangle = YELLOWRECT
-    elif color == BLUE:
-        sound = BEEP2
-        flashColor = BRIGHTBLUE
-        rectangle = BLUERECT
-    elif color == RED:
-        sound = BEEP3
-        flashColor = BRIGHTRED
-        rectangle = REDRECT
-    elif color == GREEN:
-        sound = BEEP4
-        flashColor = BRIGHTGREEN
-        rectangle = GREENRECT
+def drawPerson():
+    pygame.draw.circle(DISPLAYSURF, YELLOW, (300,60), 20)       # head
+    pygame.draw.rect(DISPLAYSURF, GREEN, (270, 100, 60, 100))   # body
+    pygame.draw.rect(DISPLAYSURF, BLUE, (270, 210, 20, 60))     # left leg
+    pygame.draw.rect(DISPLAYSURF, BLUE, (310, 210, 20, 60))     # right
 
-    origSurf = DISPLAYSURF.copy()
-    flashSurf = pygame.Surface((BUTTONSIZE, BUTTONSIZE))
-    flashSurf = flashSurf.convert_alpha()
-    r, g, b = flashColor
-    sound.play()
-    for start, end, step in ((0, 255, 1), (255, 0, -1)): # animation loop
-        for alpha in range(start, end, animationSpeed * step):
-            checkForQuit()
-            DISPLAYSURF.blit(origSurf, (0, 0))
-            flashSurf.fill((r, g, b, alpha))
-            DISPLAYSURF.blit(flashSurf, rectangle.topleft)
-            pygame.display.update()
-            FPSCLOCK.tick(FPS)
-    DISPLAYSURF.blit(origSurf, (0, 0))
-
-
-def drawButtons():
-    pygame.draw.rect(DISPLAYSURF, YELLOW, YELLOWRECT)
-    pygame.draw.rect(DISPLAYSURF, BLUE,   BLUERECT)
-    pygame.draw.rect(DISPLAYSURF, RED,    REDRECT)
-    pygame.draw.rect(DISPLAYSURF, GREEN,  GREENRECT)
-
-
-def changeBackgroundAnimation(animationSpeed=40):
-    global bgColor
-    newBgColor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-
-    newBgSurf = pygame.Surface((WINDOWWIDTH, WINDOWHEIGHT))
-    newBgSurf = newBgSurf.convert_alpha()
-    r, g, b = newBgColor
-    for alpha in range(0, 255, animationSpeed): # animation loop
-        checkForQuit()
-        DISPLAYSURF.fill(bgColor)
-
-        newBgSurf.fill((r, g, b, alpha))
-        DISPLAYSURF.blit(newBgSurf, (0, 0))
-
-        drawButtons() # redraw the buttons on top of the tint
-
-        pygame.display.update()
-        FPSCLOCK.tick(FPS)
-    bgColor = newBgColor
-
+def successAnimation():
+    pygame.draw.rect(DISPLAYSURF, GREEN, (10, 10, 500,400)) # success
+    pygame.display.update()
+    pygame.time.wait(2000)
 
 def gameOverAnimation(color=WHITE, animationSpeed=50):
-    # play all beeps at once, then flash the background
-    origSurf = DISPLAYSURF.copy()
-    flashSurf = pygame.Surface(DISPLAYSURF.get_size())
-    flashSurf = flashSurf.convert_alpha()
-    BEEP1.play() # play all four beeps at the same time, roughly.
-    BEEP2.play()
-    BEEP3.play()
-    BEEP4.play()
-    r, g, b = color
-    for i in range(3): # do the flash 3 times
-        for start, end, step in ((0, 255, 1), (255, 0, -1)):
-            # The first iteration in this loop sets the following for loop
-            # to go from 0 to 255, the second from 255 to 0.
-            for alpha in range(start, end, animationSpeed * step): # animation loop
-                # alpha means transparency. 255 is opaque, 0 is invisible
-                checkForQuit()
-                flashSurf.fill((r, g, b, alpha))
-                DISPLAYSURF.blit(origSurf, (0, 0))
-                DISPLAYSURF.blit(flashSurf, (0, 0))
-                drawButtons()
-                pygame.display.update()
-                FPSCLOCK.tick(FPS)
-
-
-
-def getButtonClicked(x, y):
-    if YELLOWRECT.collidepoint( (x, y) ):
-        return YELLOW
-    elif BLUERECT.collidepoint( (x, y) ):
-        return BLUE
-    elif REDRECT.collidepoint( (x, y) ):
-        return RED
-    elif GREENRECT.collidepoint( (x, y) ):
-        return GREEN
-    return None
-
+    pygame.draw.rect(DISPLAYSURF, RED, (10, 10, 500,400)) # success
+    pygame.display.update()
+    pygame.time.wait(3000)              
 
 if __name__ == '__main__':
     main()
