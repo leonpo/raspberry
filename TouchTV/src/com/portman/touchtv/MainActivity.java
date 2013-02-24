@@ -1,23 +1,41 @@
 package com.portman.touchtv;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	static final int NUM_PAGES = 6;
@@ -35,7 +53,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    static ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +64,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        // Create the adapter that will return a fragment for each of the three
+        // Create the adapter that will return a fragment for each of the 
         // primary sections of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -194,6 +212,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Friends fragment
      */
     public static class FriendsFragment extends Fragment {
+    	private GestureDetectorCompat mDetector;
+    	private Context context;
         
     	public FriendsFragment() {
         }
@@ -201,10 +221,66 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_friends, container, false);
-            //TextView dummyTextView = (TextView) rootView.findViewById(R.id.section_label);
-            //dummyTextView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+        	context = this.getActivity();
+            // init gesture detector
+            mDetector = new GestureDetectorCompat(this.getActivity(), new MyGestureListener());
+
+        	View rootView = inflater.inflate(R.layout.fragment_friends, container, false);
+            ImageView imageView = (ImageView) rootView.findViewById(R.id.touchPad);
+            imageView.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                	if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                		mViewPager.requestDisallowInterceptTouchEvent(true); // tell viewpager not to move
+                    }
+                	
+                    if (mDetector.onTouchEvent(event)) {
+                        return true;
+                    }
+                    return true;
+                }
+            });
+            
             return rootView;
+        }
+        
+        class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+            private static final String DEBUG_TAG = "GestureDetetor"; 
+            private static final int SWIPE_MIN_DISTANCE = 120;
+            private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+            
+            @Override
+            public boolean onDown(MotionEvent event) { 
+                Log.d(DEBUG_TAG,"onDown: " + event.toString());
+                //Toast.makeText(context, "onDown: " + event.toString(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent event1, MotionEvent event2, 
+                    float velocityX, float velocityY) {
+                Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
+              
+                if(event1.getX() - event2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	Toast.makeText(context, "Right to Left", Toast.LENGTH_SHORT).show();
+                	
+                    new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_CHANNELUP");
+                }  else if (event2.getX() - event1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	Toast.makeText(context, "Left to Right", Toast.LENGTH_SHORT).show();
+                	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_CHANNELDOWN");
+                }
+
+                if(event1.getY() - event2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                	Toast.makeText(context, "Bottom to Top", Toast.LENGTH_SHORT).show();
+                	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_VOLUMEDOWN");
+                }  else if (event2.getY() - event1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                	Toast.makeText(context, "Top to Bottom", Toast.LENGTH_SHORT).show();
+                	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_VOLUMEUP");
+                }
+                
+                return true;
+            }
         }
     }
     
@@ -285,6 +361,56 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_search, container, false);
             return rootView;
+        }
+    }
+    
+    public static class SendCommand extends AsyncTask<String,String,String> {
+        protected String doInBackground(String... urls) {
+              
+            try {
+                InputStream is = null;
+                try {
+                    URL url = new URL(urls[0]);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setReadTimeout(10000 /* milliseconds */);
+                    conn.setConnectTimeout(15000 /* milliseconds */);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    // Starts the query
+                    conn.connect();
+                    int response = conn.getResponseCode();
+                    Log.d("SendCommand", "The response is: " + response);
+                    is = conn.getInputStream();
+
+                    // Convert the InputStream into a string
+                    String contentAsString = readIt(is, 500);
+                    return contentAsString;
+                    
+                // Makes sure that the InputStream is closed after the app is
+                // finished using it.
+                } finally {
+                    if (is != null) {
+                        is.close();
+                    } 
+                }
+            	
+            } catch (IOException e) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+        	//Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+       }
+        
+        // Reads an InputStream and converts it to a String.
+        public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
+            Reader reader = null;
+            reader = new InputStreamReader(stream, "UTF-8");        
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return new String(buffer);
         }
     }
 
