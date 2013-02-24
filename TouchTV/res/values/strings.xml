@@ -2,9 +2,12 @@
 <resources>
 
     <string name="app_name">Touch TV</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="action_settings">הגדרות</string>
+    <string name="title_friends">חברים</string>
+    <string name="title_reminders">תזכורות</string>
+    <string name="title_epg">לוח שידורים</string>
+    <string name="title_user">משתמש</string>
+    <string name="title_browser">דפדפן</string>
+    <string name="title_search">חיפוש</string>
 
 </resources>
