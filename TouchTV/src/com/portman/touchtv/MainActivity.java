@@ -72,8 +72,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             // this tab is selected.
             actionBar.addTab(
                     actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            //.setIcon(R.drawable.ic_launcher)
+                            //.setText(mSectionsPagerAdapter.getPageTitle(i))
+                            .setIcon(mSectionsPagerAdapter.getPageIcon(i))
                             .setTabListener(this));
         }
         
@@ -169,6 +169,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     return getString(R.string.title_search).toUpperCase(l);
             }
             return null;
+        }
+        
+        public int getPageIcon(int position) {
+            switch (position) {
+                case 0:
+                    return R.drawable.friends;
+                case 1:
+                    return R.drawable.reminders;
+                case 2:
+                    return R.drawable.epg;
+                case 3:
+                    return R.drawable.user;
+                case 4:
+                    return R.drawable.browser;
+                case 5:
+                    return R.drawable.search;
+            }
+            return 0;
         }
     }
     
