@@ -26,28 +26,30 @@
 	    android:src="@drawable/play_kids" />
 
 	<ImageView
+	    android:id="@+id/kids1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_centerVertical="true"
+	    android:layout_marginLeft="71dp"
+	    android:layout_toRightOf="@+id/logo"
+	    android:src="@drawable/kids1" />
+
+	<ImageView
 	    android:id="@+id/kids2"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentTop="true"
 	    android:layout_centerHorizontal="true"
+	    android:layout_marginTop="68dp"
 	    android:src="@drawable/kids2" />
-
-	<ImageView
-	    android:id="@+id/kids1"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentLeft="true"
-	    android:layout_centerVertical="true"
-	    android:layout_marginLeft="23dp"
-	    android:src="@drawable/kids1" />
 
 	<ImageView
 	    android:id="@+id/kids3"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_alignParentRight="true"
-	    android:layout_centerVertical="true"
+	    android:layout_above="@+id/kidsPlay"
+	    android:layout_marginLeft="122dp"
+	    android:layout_toRightOf="@+id/kids2"
 	    android:src="@drawable/kids3" />
 
 </RelativeLayout>

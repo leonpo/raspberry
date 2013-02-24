@@ -10,4 +10,45 @@
     android:tileMode="repeat"
     tools:context=".MainActivity$SearchFragment" >
 
+    <ImageView
+	    android:id="@+id/epgContent"
+	    android:layout_width="1024dp"
+	    android:layout_height="370dp"
+	    android:src="@drawable/epg_content" />
+
+	<ImageView
+	    android:id="@+id/logo"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:src="@drawable/logo" />
+
+	<ImageButton
+	    android:id="@+id/pauseButton"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignTop="@+id/logo"
+	    android:layout_marginRight="22dp"
+	    android:layout_toLeftOf="@+id/muteButton"
+	    android:background="@null"
+	    android:src="@drawable/pause" />
+
+	<ImageButton
+	    android:id="@+id/muteButton"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentRight="true"
+	    android:layout_alignTop="@+id/pauseButton"
+	    android:layout_marginRight="44dp"
+	    android:background="@null"
+	    android:src="@drawable/mute" />
+
+	<ImageView
+	    android:id="@+id/search_popup"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:layout_toLeftOf="@+id/pauseButton"
+	    android:src="@drawable/search_popup" />
+
 </RelativeLayout>

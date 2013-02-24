@@ -10,4 +10,26 @@
     android:tileMode="repeat"
     tools:context=".MainActivity$FriendsFragment" >
 
+	<ImageView
+	    android:id="@+id/logo"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:src="@drawable/logo" />
+
+	<ImageView
+	    android:id="@+id/gestures"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentRight="true"
+	    android:src="@drawable/gestures" />
+
+	<ImageView
+	    android:id="@+id/touchPad"
+	    android:layout_width="1000dp"
+	    android:layout_height="400dp"
+	    android:layout_marginBottom="22dp"
+	    android:src="@drawable/touch_pad" />
+
 </RelativeLayout>
