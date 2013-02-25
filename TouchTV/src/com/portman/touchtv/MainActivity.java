@@ -1,41 +1,33 @@
 package com.portman.touchtv;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	static final int NUM_PAGES = 6;
@@ -228,8 +220,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	View rootView = inflater.inflate(R.layout.fragment_friends, container, false);
             ImageView imageView = (ImageView) rootView.findViewById(R.id.touchPad);
             imageView.setOnTouchListener(new View.OnTouchListener() {
-
-                @Override
+            	@Override
                 public boolean onTouch(View v, MotionEvent event) {
                 	if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 		mViewPager.requestDisallowInterceptTouchEvent(true); // tell viewpager not to move
@@ -311,6 +302,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_epg, container, false);
+            
+            ImageView imageView = (ImageView) rootView.findViewById(R.id.epgContent);
+            imageView.setOnClickListener(new View.OnClickListener() {
+            	   //@Override
+            	   public void onClick(View v) {
+            		   new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_3");         
+            	   }        
+            	});
             return rootView;
         }
     }
@@ -343,6 +342,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_browser, container, false);
+            ImageView imageView = (ImageView) rootView.findViewById(R.id.navigationContent);
+            imageView.setOnClickListener(new View.OnClickListener() {
+         	   //@Override
+         	   public void onClick(View v) {
+         		   new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_1");  
+         		   new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_0");   
+         	   }        
+         	});
             return rootView;
         }
     }
@@ -359,6 +366,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_search, container, false);
+            ImageView imageView = (ImageView) rootView.findViewById(R.id.search_popup);
+            imageView.setOnClickListener(new View.OnClickListener() {
+          	   //@Override
+          	   public void onClick(View v) {
+          		   new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_VIDEO");     
+          	   }        
+          	});
             return rootView;
         }
     }

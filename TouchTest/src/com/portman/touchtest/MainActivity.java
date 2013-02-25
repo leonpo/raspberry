@@ -1,16 +1,12 @@
 package com.portman.touchtest;
 
-import java.io.DataOutputStream;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -60,6 +56,7 @@ public class MainActivity extends Activity {
 	        for (int h = 0; h < historySize; h++) {
 	            for (int p = 0; p < pointerCount; p++) {
 		            s = ev.getHistoricalEventTime(h) + ", "
+		            	+ ev.getDownTime() + ", "	
 		            	+ ev.getPointerId(p) + ", " 
 		            	+ ev.getHistoricalX(p, h) + ", " 
 		                + ev.getHistoricalY(p, h) + ", "
@@ -70,6 +67,7 @@ public class MainActivity extends Activity {
 	        }
 	        for (int p = 0; p < pointerCount; p++) {
 	            s = ev.getEventTime() + ", "
+	            		+ ev.getDownTime() + ", "
 		            	+ ev.getPointerId(p) + ", " 
 		            	+ ev.getX(p) + ", " 
 		                + ev.getY(p) + ", "
