@@ -18,20 +18,12 @@
 	    android:src="@drawable/logo" />
 
 	<ImageView
-	    android:id="@+id/kidsPlay"
-	    android:layout_width="wrap_content"
-	    android:layout_height="150dp"
-	    android:layout_alignParentBottom="true"
-	    android:layout_centerHorizontal="true"
-	    android:src="@drawable/play_kids" />
-
-	<ImageView
 	    android:id="@+id/kids1"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
 	    android:layout_centerVertical="true"
-	    android:layout_marginLeft="71dp"
-	    android:layout_toRightOf="@+id/logo"
+	    android:layout_marginLeft="18dp"
 	    android:src="@drawable/kids1" />
 
 	<ImageView
@@ -40,16 +32,24 @@
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentTop="true"
 	    android:layout_centerHorizontal="true"
-	    android:layout_marginTop="68dp"
+	    android:layout_marginTop="28dp"
 	    android:src="@drawable/kids2" />
 
 	<ImageView
 	    android:id="@+id/kids3"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_above="@+id/kidsPlay"
-	    android:layout_marginLeft="122dp"
-	    android:layout_toRightOf="@+id/kids2"
+	    android:layout_alignParentRight="true"
+	    android:layout_centerVertical="true"
+	    android:layout_marginRight="11dp"
 	    android:src="@drawable/kids3" />
+
+	<ImageView
+	    android:id="@+id/kidsPlay"
+	    android:layout_width="wrap_content"
+	    android:layout_height="120dp"
+	    android:layout_alignParentBottom="true"
+	    android:layout_centerHorizontal="true"
+	    android:src="@drawable/play_kids" />
 
 </RelativeLayout>
