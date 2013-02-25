@@ -263,19 +263,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
               
                 if(event1.getX() - event2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                	Toast.makeText(context, "Right to Left", Toast.LENGTH_SHORT).show();
-                	
-                    new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_CHANNELUP");
+                	//Toast.makeText(context, "Right to Left", Toast.LENGTH_SHORT).show();
+                	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_CHANNELUP");
                 }  else if (event2.getX() - event1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                	Toast.makeText(context, "Left to Right", Toast.LENGTH_SHORT).show();
+                	//Toast.makeText(context, "Left to Right", Toast.LENGTH_SHORT).show();
                 	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_CHANNELDOWN");
                 }
 
                 if(event1.getY() - event2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-                	Toast.makeText(context, "Bottom to Top", Toast.LENGTH_SHORT).show();
+                	//Toast.makeText(context, "Bottom to Top", Toast.LENGTH_SHORT).show();
                 	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_VOLUMEDOWN");
                 }  else if (event2.getY() - event1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-                	Toast.makeText(context, "Top to Bottom", Toast.LENGTH_SHORT).show();
+                	//Toast.makeText(context, "Top to Bottom", Toast.LENGTH_SHORT).show();
                 	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_VOLUMEUP");
                 }
                 
