@@ -14,6 +14,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -370,7 +371,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             imageView.setOnClickListener(new View.OnClickListener() {
           	   //@Override
           	   public void onClick(View v) {
-          		   new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_VIDEO");     
+          		    // KEY_2 KEY_GREEN KEY_UP KEY_4 KEY_2 KEY_0 KEY_4 KEY_4x4 KEY_SELECT
+          		    new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_2");
+	          		new Handler().postDelayed(new Runnable(){
+	          		    public void run() {
+		          		   new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_GREEN");
+		          		   new Handler().postDelayed(new Runnable(){
+			          		    public void run() {
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_UP");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_4");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_2");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_0");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_4");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_4");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_4");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_4");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_4");
+			          		    	new SendCommand().execute("http://192.168.42.1:5000//device/yes_max_hd/clicked/KEY_SELECT");
+			          		    }
+			          		}, 25000);
+	          		    }
+	          		}, 15000);
           	   }        
           	});
             return rootView;
