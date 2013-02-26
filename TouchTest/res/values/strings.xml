@@ -3,6 +3,6 @@
 
     <string name="app_name">Touch Test</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Please swipe below 3 times</string>
 
 </resources>

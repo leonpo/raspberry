@@ -10,10 +10,14 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	private static final String DEBUG_TAG = "TouchTest";
+	
+	private EditText edittext;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +33,8 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+        
+        edittext = (EditText) findViewById(R.id.editText);
     }
 
     @Override
@@ -44,7 +50,7 @@ public class MainActivity extends Activity {
         FileWriter log_writer = null;
         String s;
 		try {
-			log_file = new File(root,"touch.txt");
+			log_file = new File(root,edittext.getText() + ".txt");
             if(!log_file.exists()) {
                     log_file.createNewFile();
                 }

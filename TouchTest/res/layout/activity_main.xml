@@ -8,6 +8,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:imeOptions="actionDone"
+        android:text="user" />
+
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -18,9 +27,8 @@
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="59dp"
+        android:layout_alignLeft="@+id/editText"
+        android:layout_alignParentBottom="true"
         android:src="@drawable/touchpad" />
-
+    
 </RelativeLayout>
